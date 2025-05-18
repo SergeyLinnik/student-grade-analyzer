@@ -1,76 +1,78 @@
-# Список студентов. Каждый студент — словарь с 'name' и 'grades'
-students = [
-    {"name": "Алексей", "grades": [80, 90, 75, 85]},
-    {"name": "Мария", "grades": [60, 70, 65, 58]},
-    {"name": "Иван", "grades": [92, 88, 95, 90]},
-    {"name": "Ольга", "grades": [50, 55, 60, 48]}
-]
+# Словарь library: ключ — название книги, значение — словарь с информацией о книге
+library = {}
+
+def add_book(title, author, year):
+    """
+    Добавляет или обновляет информацию о книге в библиотеке.
+    
+    :param title: Название книги
+    :param author: Автор книги
+    :param year: Год издания
+    """
+    if title in library:
+        print(f"Книга '{title}' уже существует в библиотеке. Хотите обновить информацию?")
+        choice = input("Введите 'да' для обновления, любую другую клавишу для отмены: ").strip().lower()
+        if choice == 'да':
+            library[title] = {
+                "author": author,
+                "year": year,
+                "available": None  # Не определено при добавлении
+            }
+            print(f"Информация о книге '{title}' успешно обновлена.\n")
+    else:
+        library[title] = {
+            "author": author,
+            "year": year,
+            "available": True  # По умолчанию книга доступна
+        }
+        print(f"Книга '{title}' успешно добавлена в библиотеку.\n")
 
 
-def calculate_average(grades):
-    """Возвращает средний балл по списку оценок"""
-    return round(sum(grades) / len(grades), 2)
+def remove_book(title):
+    """
+    Удаляет книгу из библиотеки по её названию.
+    
+    :param title: Название книги
+    """
+    if title in library:
+        del library[title]
+        print(f"Книга '{title}' успешно удалена из библиотеки.\n")
+    else:
+        print(f"Книга '{title}' не найдена в библиотеке.\n")
 
 
-def calculate_total_average(students_list):
-    """Вычисляет общий средний балл по всем студентам"""
-    total_sum = sum(calculate_average(student['grades']) for student in students_list)
-    return round(total_sum / len(students_list), 2)
+def issue_book(title):
+    """
+    Отмечает книгу как выданную (available = False).
+    
+    :param title: Название книги
+    """
+    if title in library:
+        if library[title]["available"]:
+            library[title]["available"] = False
+            print(f"Книга '{title}' успешно выдана.\n")
+        else:
+            print(f"Книга '{title}' уже выдана.\n")
+    else:
+        print(f"Книга '{title}' не найдена в библиотеке.\n")
 
 
-def classify_student(avg_score):
-    """Возвращает статус студента: успешный или отстающий"""
-    return "успешный" if avg_score >= 75 else "отстающий"
+def return_book(title):
+    """
+    Отмечает книгу как возвращённую (available = True).
+    
+    :param title: Название книги
+    """
+    if title in library:
+        if not library[title]["available"]:
+            library[title]["available"] = True
+            print(f"Книга '{title}' успешно возвращена в библиотеку.\n")
+        else:
+            print(f"Книга '{title}' уже находится в библиотеке.\n")
+    else:
+        print(f"Книга '{title}' не найдена в библиотеке.\n")
 
 
-# 2-4. Вычисляем и выводим информацию о каждом студенте
-print("=== Информация о студентах ===\n")
-for student in students:
-    avg = calculate_average(student['grades'])
-    status = classify_student(avg)
-    print(f"Имя: {student['name']}")
-    print(f"Средний балл: {avg}")
-    print(f"Статус: {status}\n")
-
-
-# 5. Общий средний балл
-total_avg = calculate_total_average(students)
-print(f"Общий средний балл по всем студентам: {total_avg}\n")
-
-
-# 6. Добавляем нового студента
-new_student = {"name": "Дмитрий", "grades": [70, 75, 80, 78]}
-students.append(new_student)
-print(f"Студент '{new_student['name']}' добавлен.\n")
-
-
-# Пересчитываем общий средний балл после добавления
-total_avg = calculate_total_average(students)
-print(f"Новый общий средний балл: {total_avg}\n")
-
-
-# 7. Удаляем студента с самым низким средним баллом
-students_with_avg = [
-    {"name": s["name"], "grades": s["grades"], "average": calculate_average(s["grades"])} 
-    for s in students
-]
-
-# Находим студента с минимальным средним баллом
-min_student = min(students_with_avg, key=lambda x: x["average"])
-students = [s for s in students if s["name"] != min_student["name"]]
-print(f"Студент '{min_student['name']}' с наименьшим средним баллом удалён из списка.\n")
-
-
-# Пересчитываем общий средний балл после удаления
-total_avg = calculate_total_average(students)
-print(f"Финальный общий средний балл: {total_avg}\n")
-
-
-# Вывод финального списка студентов
-print("=== Финальный список студентов ===\n")
-for student in students:
-    avg = calculate_average(student['grades'])
-    status = classify_student(avg)
-    print(f"Имя: {student['name']}")
-    print(f"Средний балл: {avg}")
-    print(f"Статус: {status}\n")
+def book_list_view(library):
+    """
+    Выводит список всех книг в библиотеке
